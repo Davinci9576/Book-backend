@@ -35,7 +35,17 @@ export const createBook = async (req: Request, res: Response) => {
 export const getBooks = async (req: Request, res: Response)=>{
   try{
     const bookList = await books.find().toArray();
-    res.status(200).json(bookList);
+    const formattedBooks = bookList.map((book) => ({
+      id: book._id.toString(),
+      name: book.names,
+      publication: book.publication,
+      pdf: book.pdfUrl,
+      author: book.author,
+      uploaded_by: book.uploadedBy,
+      thumbnail: book.thumbnail,
+    }));
+
+    res.status(200).json(formattedBooks);
   }catch(error){
     console.error("Get books failed:", error);
     res.status(500).json({
@@ -43,27 +53,76 @@ export const getBooks = async (req: Request, res: Response)=>{
     });
   }
 };
-export const getBookById = async (req: Request, res: Response)=>{
-  try{
+export const getMyBooks = async (req: Request, res: Response) => {
+  try {
+    const uploadedBy = req.user!.userId;
+
+    const bookList = await books
+      .find({ uploadedBy })
+      .toArray();
+        const formattedBooks = bookList.map((book) => ({
+      id: book._id.toString(),
+      name: book.names,
+      publication: book.publication,
+      pdf: book.pdfUrl,
+      author: book.author,
+      uploaded_by: book.uploadedBy,
+      thumbnail: book.thumbnail,
+    }));
+
+
+    res.status(200).json(formattedBooks);
+  } catch (error) {
+    console.error("Get my books failed:", error);
+
+    res.status(500).json({
+      error: "Failed to get your books",
+    });
+  }
+};
+export const getBookById = async (req: Request, res: Response) => {
+  try {
     const id = req.params.id as string;
-    if(!ObjectId.isValid(id)){
+
+    console.log("BOOK ID FROM URL:", id);
+    console.log("VALID OBJECT ID:", ObjectId.isValid(id));
+
+    if (!ObjectId.isValid(id)) {
       res.status(400).json({
         error: "Invalid book ID",
       });
       return;
     }
+
+    const objectId = new ObjectId(id);
+
     const book = await books.findOne({
-      _id: new ObjectId(id),
+      _id: objectId,
     });
-    if(!books){
+
+    console.log("BOOK FOUND:", book);
+
+    if (!book) {
       res.status(404).json({
         error: "Book not found!",
       });
       return;
     }
-    res.status(200).json(book);
-  }catch(error){
-    console.error("Get book failed: ", error);
+
+    const formattedBook = {
+      id: book._id.toString(),
+      name: book.names,
+      publication: book.publication,
+      pdf: book.pdfUrl,
+      author: book.author,
+      uploaded_by: book.uploadedBy,
+      thumbnail: book.thumbnail,
+    };
+
+    res.status(200).json(formattedBook);
+  } catch (error) {
+    console.error("Get book failed:", error);
+
     res.status(500).json({
       error: "Failed to get book",
     });
