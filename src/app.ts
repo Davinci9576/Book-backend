@@ -4,6 +4,7 @@ import { MongoClient } from "mongodb";
 
 import authRouter from "./routes/auth.routes";
 import { router as bookRouter } from "./routes/book.routes";
+import authorRouter from "./routes/auth.routes";
 const app = express();
 
 const port = Number(process.env.PORT) || 3000;
@@ -14,6 +15,7 @@ app.use(express.json());
 
 app.use("/auth", authRouter);
 app.use("/books", bookRouter);
+app.use("/authors", authorRouter);
 
 async function startServer() {
   try {

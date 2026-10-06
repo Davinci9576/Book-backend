@@ -7,6 +7,7 @@ const db = client.db("bookapp");
 
 export const users = db.collection("users");
 export const books = db.collection("books");
+export const authors = db.collection("authors");
 
 export async function connectMongoDB() {
   await client.connect();
