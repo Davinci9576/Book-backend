@@ -4,7 +4,7 @@ import { MongoClient } from "mongodb";
 
 import authRouter from "./routes/auth.routes";
 import { router as bookRouter } from "./routes/book.routes";
-import authorRouter from "./routes/auth.routes";
+import authorRouter from "./routes/author.routes";
 const app = express();
 
 const port = Number(process.env.PORT) || 3000;
@@ -20,7 +20,7 @@ app.use("/authors", authorRouter);
 async function startServer() {
   try {
     await client.connect();
-
+    
     console.log("Connected to MongoDB");
 
     app.listen(port, "0.0.0.0", () => {
